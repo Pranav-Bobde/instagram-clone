@@ -1,33 +1,33 @@
+import { collection, onSnapshot, orderBy, query } from "firebase/firestore";
+import { useEffect } from "react";
+import { useState } from "react";
 import Post from "../components/Post";
-
-const posts = [
-  {
-    id: "123",
-    username: "nothing",
-    userImg: "https://links.papareact.com/3ke",
-    img: "https://w0.peakpx.com/wallpaper/746/534/HD-wallpaper-zero-two-backround-simple-zero-two-thumbnail.jpg",
-    caption: "Hit the like button",
-  },
-  {
-    id: "123",
-    username: "nothing",
-    userImg: "https://links.papareact.com/3ke",
-    img: "https://w0.peakpx.com/wallpaper/746/534/HD-wallpaper-zero-two-backround-simple-zero-two-thumbnail.jpg",
-    caption: "Hit the like button",
-  },
-];
+import { db } from "../firebase";
 
 const Posts = () => {
+  const [posts, setPosts] = useState([]);
+
+  useEffect(
+    () =>
+      onSnapshot(
+        query(collection(db, "posts"), orderBy("timestamp", "desc")),
+        (snapshot) => {
+          setPosts(snapshot.docs);
+        }
+      ),
+    [db]
+  );
+
   return (
     <div>
       {posts.map((post) => (
         <Post
           key={post.id}
           id={post.id}
-          username={post.username}
-          userImg={post.userImg}
-          img={post.img}
-          caption={post.caption}
+          username={post.data().username}
+          userImg={post.data().profileImg}
+          img={post.data().image}
+          caption={post.data().caption}
         />
       ))}
     </div>
